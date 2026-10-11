@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Lip Sync</title>
+  <meta name="description" content="Turn dialogue audio into a mouth-shape animation using your own drawn mouths.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Lip Sync">
+  <meta name="theme-color" content="#16161a">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>Lip Sync</h1>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="make" aria-selected="true">Make</button>
+      <button role="tab" data-tab="characters" aria-selected="false">Characters</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- MAKE -->
+    <section id="tab-make" class="tab" data-active="true">
+      <div class="panel form">
+        <label class="field">
+          <span>Character</span>
+          <select id="make-character"></select>
+        </label>
+        <label class="field">
+          <span>Dialogue audio</span>
+          <input id="make-audio" type="file" accept="audio/*,.wav,.mp3,.m4a,.aac,.ogg,.flac">
+          <small id="make-audio-info" class="muted"></small>
+        </label>
+        <label class="field">
+          <span>Frame rate</span>
+          <select id="make-fps">
+            <option value="12">12 fps</option>
+            <option value="24" selected>24 fps</option>
+            <option value="25">25 fps</option>
+            <option value="30">30 fps</option>
+          </select>
+        </label>
+        <label class="field wide">
+          <span>Transcript <em class="muted">(optional, English: improves accuracy)</em></span>
+          <textarea id="make-transcript" rows="3" placeholder="Type exactly what is said in the audio"></textarea>
+        </label>
+        <label class="check wide">
+          <input id="make-trim" type="checkbox">
+          <span>Trim empty space around the mouths <em class="muted">(off keeps the full canvas, so the GIF lines up with your character)</em></span>
+        </label>
+        <div class="actions wide">
+          <button id="make-go" class="primary">Generate</button>
+          <span id="make-status" class="status" aria-live="polite"></span>
+        </div>
+      </div>
+
+      <div id="result" class="panel" hidden>
+        <div class="preview-wrap">
+          <canvas id="preview" class="checker"></canvas>
+        </div>
+        <div class="transport">
+          <button id="play" class="icon-btn" aria-label="Play">▶</button>
+          <span id="clock" class="mono">0:00.00</span>
+          <span class="muted small" id="frame-label"></span>
+        </div>
+        <p class="muted small">Tap a frame to jump to it. Tap the highlighted frame again to change its shape.</p>
+        <div id="timeline" class="timeline" role="list"></div>
+        <div class="actions">
+          <button id="dl-gif" class="primary">Download GIF</button>
+          <button id="dl-timing">Download timing (.txt)</button>
+          <span id="export-status" class="status"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHARACTERS -->
+    <section id="tab-characters" class="tab" data-active="false">
+      <div class="panel">
+        <div class="row between">
+          <h2>Characters</h2>
+          <div class="row">
+            <button id="char-import">Import…</button>
+            <button id="char-new" class="primary">New character</button>
+          </div>
+        </div>
+        <ul id="char-list" class="char-list"></ul>
+        <p id="char-empty" class="muted">No characters yet. Create one, then add a PNG for each mouth shape.</p>
+        <input id="char-import-file" type="file" accept=".json,application/json" hidden>
+      </div>
+
+      <div id="char-editor" class="panel" hidden>
+        <div class="row between">
+          <label class="field grow">
+            <span>Name</span>
+            <input id="char-name" type="text" autocomplete="off">
+          </label>
+        </div>
+        <p class="muted small">
+          Export every mouth from the same canvas size, as a transparent PNG.
+          To fill several slots at once, pick files named by shape letter (e.g. <span class="mono">A.png</span>, <span class="mono">mouth-B.png</span>).
+          G, H and X are optional; when missing, B, C and A are used instead.
+        </p>
+        <div class="row">
+          <button id="char-bulk">Add files by name…</button>
+          <input id="char-bulk-file" type="file" accept="image/png,image/*" multiple hidden>
+          <span id="char-size" class="muted small"></span>
+        </div>
+        <div id="slots" class="slots"></div>
+        <div class="row between">
+          <button id="char-delete" class="danger">Delete character</button>
+          <button id="char-export">Export backup</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="picker" class="picker" hidden>
+    <div class="picker-inner">
+      <div class="picker-title">Shape for frame <span id="picker-frame"></span></div>
+      <div id="picker-grid" class="picker-grid"></div>
+      <button id="picker-cancel">Cancel</button>
+    </div>
+  </div>
+
+  <input id="slot-file" type="file" accept="image/png,image/*" hidden>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
